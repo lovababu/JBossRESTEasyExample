@@ -10,6 +10,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -19,7 +20,7 @@ import java.util.Map;
  * Created by Lovababu on 9/6/2015.
  */
 @Path("/project")
-@Produces({"application/xml"})
+@Produces(MediaType.APPLICATION_XML)
 public class ProjectServiceImpl {
     private static Map<Integer, ProjectEntity> projectStore = new HashMap();
 
@@ -28,17 +29,19 @@ public class ProjectServiceImpl {
 
     @POST
     @Path("/")
-    @Consumes({"application/xml"})
+    @Consumes(MediaType.APPLICATION_XML)
     public Response create(Project project) throws InvocationTargetException, IllegalAccessException {
         projectStore.put(project.getId(), ProjectDTO.projectEntity(project));
-        return Response.status(Response.Status.CREATED).entity("Request processed successfully").build();
+        return Response.status(Response.Status.CREATED)
+                .entity("Request processed successfully").build();
     }
 
     @GET
     @Path("/{id}")
     public Response get(@PathParam("id") int id) throws InvocationTargetException, IllegalAccessException {
         Project project = ProjectDTO.project((ProjectEntity)projectStore.get(Integer.valueOf(id)));
-        return project != null?Response.status(Response.Status.OK).entity(project).build():Response.status(Response.Status.NOT_FOUND).entity("Supplied id not matched with any record.").build();
+        return project != null ? Response.status(Response.Status.OK).entity(project).build() :
+                Response.status(Response.Status.NOT_FOUND).entity("Supplied id not matched with any record.").build();
     }
 
     static {
